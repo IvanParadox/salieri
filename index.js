@@ -131,6 +131,68 @@ class Song extends Entity { //наследование свойств из ро�
     return this;
   }
 
+  getDuration() {
+    return this.duration;
+  }
+
+  setDuration(duration) {
+    if (typeof duration !== 'number' || duration === null || duration === '') throw new Error ('invalid duration');
+      let time = duration.toString();
+      let time_parts = time.split('.');
+      this.duration = time_parts[0] * 1000 * 60 + time_parts[1] * 1000;
+      return this;
+  }
+
+  getReleased() {
+    return this.realeased;
+  }
+
+  setReleased(released) {
+    if (typeof released !== 'number' || released === null || released === '') throw new Error ("invalid realeased date");
+      this.released = released;
+      return this;
+  }
+
+  getText() {
+    return this.text;
+  }
+
+  setText(text) {
+    if (typeof text !== 'string' || text === null || text === '') throw new Error ('invalid text');
+      this.text = text;
+      return this;
+  }
+
+  getBPM() {
+    return this.bpm;
+  }
+
+  setBPM(bpm) {
+    if (typeof bpm !== 'number' || bpm === null || bpm === '') throw new Error ("invalid bpm");
+      this.bpm = bpm;
+      return this;
+  }
+
+  getExplicit() {
+    return this.explicit;
+  }
+
+  setExplicit(explicit) {
+    if (typeof explicit !== 'boolean' || explicit === null || explicit === '') throw new Error ('invalid explicit');
+    this.explicit = explicit;
+    return this;
+  }
+
+  getFileID() {
+    return this.fileID;
+  }
+
+  setFileID(fileID) {
+    if (typeof fileID !== 'number' || fileID === null || fileID === '') throw new Error ('invalid file ID');
+    this.fileID = fileID;
+    return this;
+  }
+
   isValid() {
     return typeof this.genre !== 'undefined';
   }
@@ -393,7 +455,13 @@ const album = albums.new()
                     .setCover(true);
 
 const song = songs.new()
-                  .setName('Toosie Slide');
+                  .setName('Toosie Slide')
+                  .setDuration(2.10)
+                  .setReleased(2020)
+                  .setText('Some random text for example')
+                  .setBPM(140)
+                  .setExplicit(false)
+                  .setFileID(0);
 
 const label = labels.new()
                    .setLabel('Republic')
@@ -418,7 +486,7 @@ genres.set(genre);
 song.setAlbum(album)
     .setArtist(artist)
     .setGenre(genre);
-    
+
 album.setLabel(label)
      .setArtist(artist)
      .setGenre(genre);
