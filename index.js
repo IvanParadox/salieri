@@ -24,12 +24,12 @@ class Artist extends Entity {
   }
 
   setGender(gender) {
-    if (typeof gender !== 'number' || gender === null || gender === '') throw new Error ('invalid gender');
+    if (typeof gender !== 'number' || gender === null || isNaN(gender) === true || gender === '') throw new Error ('invalid gender');
       this.gender = gender;
       return this;
   }
 
-  getBand() {
+  isBand() {
     return this.band;
   }
 
@@ -45,12 +45,19 @@ class Artist extends Entity {
 
   setBio(bio) {
     if (typeof bio !== 'string' || bio === null || bio === '') throw new Error ('invalid bio');
-    this.bio = bio;
-    return this;
+    if (bio.length < 256) {
+      this.bio = bio;
+      return this;
+    } else {
+      throw new Error ('bio is too long');
+    }
   }
 
   isValid() {
     return typeof this.name !== 'undefined';
+    return typeof this.gender !== 'undefined';
+    return typeof this.band !== 'undefined';
+    return typeof this.bio !== 'undefined';
   }
 
 }
@@ -70,22 +77,14 @@ class Song extends Entity { //наследование свойств из ро�
       return this;
   }
 
-  isValid() {
-    return typeof this.name !== 'undefined';
-  }
-
   getAlbum() {
-    for (let [key, value] of albums.map) {
-      if (value.id === this.id) {
-        return value;
-      }
-    }
+    return albums.map.get(this.id);
   }
 
   setAlbum(album) {
     if (album instanceof Album) {
       this.albumID = album.id;
-    } else if (typeof album === 'number') {
+    } else if (typeof album === 'number' || isNaN(album) === false) {
       this.albumID = album;
     } else {
       throw new Error ("invalid album object");
@@ -94,17 +93,13 @@ class Song extends Entity { //наследование свойств из ро�
   }
 
   getArtist() {
-    for (let [key, value] of artists.map) {
-      if (value.id === this.id) {
-        return value;
-      }
-    }
+    return artists.map.get(this.id);
   }
 
   setArtist(artist) {
     if (artist instanceof Artist) {
       this.artistID = artist.id;
-    } else if (typeof artist === 'number') {
+    } else if (typeof artist === 'number' || isNaN(artist) === false) {
       this.artistID = artist;
     } else {
       throw new Error ("invalid artist object")
@@ -113,17 +108,13 @@ class Song extends Entity { //наследование свойств из ро�
   }
 
   getGenre() {
-    for (let [ket, value] of genres.map) {
-      if (value.id === this.id) {
-        return value;
-      }
-    }
+    return genres.map.get(this.id);
   }
 
   setGenre(genre) {
     if (genre instanceof Genre) {
       this.genreID = genre.id;
-    } else if (typeof genre === 'number') {
+    } else if (typeof genre === 'number' || isNaN(gender) === false) {
       this.genreID = genre;
     } else {
       throw new Error ("invalid genre object");
@@ -136,10 +127,8 @@ class Song extends Entity { //наследование свойств из ро�
   }
 
   setDuration(duration) {
-    if (typeof duration !== 'number' || duration === null || duration === '') throw new Error ('invalid duration');
-      let time = duration.toString();
-      let time_parts = time.split('.');
-      this.duration = time_parts[0] * 1000 * 60 + time_parts[1] * 1000;
+    if (typeof duration !== 'number' || duration === null || isNaN(duration) === true || duration === '') throw new Error ('invalid duration');
+      this.duration = duration;
       return this;
   }
 
@@ -148,8 +137,8 @@ class Song extends Entity { //наследование свойств из ро�
   }
 
   setReleased(released) {
-    if (typeof released !== 'number' || released === null || released === '') throw new Error ("invalid realeased date");
-      this.released = released;
+    if (typeof released !== 'number' || released === null || isNaN(released) === true || released === '') throw new Error ("invalid realeased date");
+      this.released = new Date(released);
       return this;
   }
 
@@ -168,12 +157,16 @@ class Song extends Entity { //наследование свойств из ро�
   }
 
   setBPM(bpm) {
-    if (typeof bpm !== 'number' || bpm === null || bpm === '') throw new Error ("invalid bpm");
-      this.bpm = bpm;
-      return this;
+    if (typeof bpm !== 'number' || bpm === null || isNaN(bpm) === true || bpm === '') throw new Error ("invalid bpm");
+      if (bpm < 500) {
+        this.bpm = bpm;
+        return this;
+      } else {
+        throw new Error ("invalid length of bpm");
+      }
   }
 
-  getExplicit() {
+  isExplicit() {
     return this.explicit;
   }
 
@@ -188,13 +181,22 @@ class Song extends Entity { //наследование свойств из ро�
   }
 
   setFileID(fileID) {
-    if (typeof fileID !== 'number' || fileID === null || fileID === '') throw new Error ('invalid file ID');
+    if (typeof fileID !== 'number' || fileID === null || isNaN(fileID) === true || fileID === '') throw new Error ('invalid file ID');
     this.fileID = fileID;
     return this;
   }
 
   isValid() {
+    return typeof this.name !== 'undefined';
+    return typeof this.album !== 'undefined';
+    return typeof this.artist !== 'undefined';
     return typeof this.genre !== 'undefined';
+    return typeof this.duration !== 'undefined';
+    return typeof this.released !== 'undefined';
+    return typeof this.text !== 'undefined';
+    return typeof this.bpm !== 'undefined';
+    return typeof this.explicit !== 'undefined';
+    return typeof this.fileID !== 'undefined';
   }
 
 }
@@ -209,7 +211,7 @@ class Album extends Entity { //наследование свойств из ро
   }
 
   setAlbum(album) { //записывает новое значение album
-    if (typeof album !== 'number' || album === null || album < 0) throw new Error ("invalid album ID");
+    if (typeof album !== 'number' || album === null || isNaN(album) === true || album < 0) throw new Error ("invalid album ID");
       this.album = album;
       return this;
   }
@@ -219,24 +221,16 @@ class Album extends Entity { //наследование свойств из ро
   }
 
   setReleased(released) {
-    if (typeof released !== 'number' || released === null || released === '') throw new Error ("invalid realeased date");
-      this.released = released;
+    if (typeof released !== 'number' || released === null || isNaN(released) === true || released === '') throw new Error ("invalid realeased date");
+      this.released = new Date(released);
       return this;
   }
 
-  isValid() {
-    return typeof this.album !== 'undefined';
+  getName() {
+    return labels.map.get(this.id);
   }
 
-  getLabel() {
-    for (let [key, value] of labels.map) {
-      if (value.id === this.id) {
-        return value;
-      }
-    }
-  }
-
-  setLabel(label) {
+  setName(label) {
     if (label instanceof Label) {
       this.labelID = label.id;
     } else if (typeof label === 'string') {
@@ -248,17 +242,13 @@ class Album extends Entity { //наследование свойств из ро
   }
 
   getArtist() {
-    for (let [key, value] of artists.map) {
-      if (value.id === this.id) {
-        return value;
-      }
-    }
+    return artists.map.get(this.id);
   }
 
   setArtist(artist) {
     if (artist instanceof Artist) {
       this.artistID = artist.id;
-    } else if (typeof artist === 'number') {
+    } else if (typeof artist === 'number' || isNaN(gender) === false) {
       this.artistID = artist;
     } else {
       throw new Error ("invalid artist object")
@@ -267,17 +257,13 @@ class Album extends Entity { //наследование свойств из ро
   }
 
   getGenre() {
-    for (let [ket, value] of genres.map) {
-      if (value.id === this.id) {
-        return value;
-      }
-    }
+    return genres.map.get(this.id);
   }
 
   setGenre(genre) {
     if (genre instanceof Genre) {
       this.genreID = genre.id;
-    } else if (typeof genre === 'number') {
+    } else if (typeof genre === 'number' || isNaN(gender) === false) {
       this.genreID = genre;
     } else {
       throw new Error ("invalid genre object");
@@ -291,8 +277,12 @@ class Album extends Entity { //наследование свойств из ро
 
   setBio(bio) {
     if (typeof bio !== 'string' || bio === null || bio === '') throw new Error ('invalid bio');
-    this.bio = bio;
-    return this;
+    if (bio.length < 256) {
+      this.bio = bio;
+      return this;
+    } else {
+      throw new Error ('bio is too long');
+    }
   }
 
   getCover() {
@@ -300,13 +290,19 @@ class Album extends Entity { //наследование свойств из ро
   }
 
   setCover(cover) {
-    if (typeof cover !== 'boolean' || cover === null || cover === '') throw new Error ('invalid cover');
+    if (typeof cover !== 'string' || cover === null || cover === '') throw new Error ('invalid cover');
     this.cover = cover;
     return this;
   }
 
   isValid() {
     return typeof this.album !== 'undefined';
+    return typeof this.released !== 'undefined';
+    return typeof this.label !== 'undefined';
+    return typeof this.artist !== 'undefined';
+    return typeof this.genre !== 'undefined';
+    return typeof this.bio !== 'undefined';
+    return typeof this.cover !== 'undefined';
   }
 
 }
@@ -332,12 +328,17 @@ class Genre extends Entity {
 
   setBio(bio) {
     if (typeof bio !== 'string' || bio === null || bio === '') throw new Error ('invalid bio');
-    this.bio = bio;
-    return this;
+    if (bio.length < 256) {
+      this.bio = bio;
+      return this;
+    } else {
+      throw new Error ('bio is too long');
+    }
   }
 
   isValid() {
     return typeof this.genre !== 'undefined';
+    return typeof this.bio !== 'undefined';
   }
 
 }
@@ -363,12 +364,17 @@ class Label extends Entity {
 
   setBio(bio) {
     if (typeof bio !== 'string' || bio === null || bio === '') throw new Error ('invalid bio');
-    this.bio = bio;
-    return this;
+    if (bio.length < 256) {
+      this.bio = bio;
+      return this;
+    } else {
+      throw new Error ('bio is too long');
+    }
   }
 
   isValid() {
-    return typeof this.album !== 'undefined';
+    return typeof this.label !== 'undefined';
+    return typeof this.bio !== 'undefined';
   }
 }
 
@@ -450,14 +456,14 @@ const genres = new Genres();
 
 const album = albums.new()
                     .setAlbum(0)
-                    .setReleased(2020)
+                    .setReleased(1580003450303)
                     .setBio('Some random text for example')
-                    .setCover(true);
+                    .setCover('./covers/randomcover.jpg');
 
 const song = songs.new()
                   .setName('Toosie Slide')
-                  .setDuration(2.10)
-                  .setReleased(2020)
+                  .setDuration(121000)
+                  .setReleased(1580003450303)
                   .setText('Some random text for example')
                   .setBPM(140)
                   .setExplicit(false)
@@ -496,3 +502,8 @@ console.log(album);
 console.log(artist);
 console.log(label);
 console.log(genre);
+console.log(artist.isValid());
+console.log(song.isValid());
+console.log(album.isValid());
+console.log(genre.isValid());
+console.log(label.isValid());
