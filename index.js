@@ -442,101 +442,127 @@ function saveFiles(songs, albums, artists, labels, genres) {
     fs.mkdirSync('./data');
   }
 
-  //songs.map.forEach((item, i) => {
-    //fs.writeFileSync(`./data/songs.json`, '');
-    //fs.appendFile(`./data/songs.json`, JSON.stringify(item) + "\n", (err) => {
-      //if (err) throw err;
-    //});
-  //});
+  console.log('lets save');
 
   let writeableStreamSongs = fs.createWriteStream(`./data/songs.json`);
+  writeableStreamSongs.write('[\n');
   songs.map.forEach((item, i) => {
-    writeableStreamSongs.write(JSON.stringify(item) + "\n");
+    writeableStreamSongs.write(JSON.stringify(item) + ",\n");
   });
+  writeableStreamSongs.end('{}\n]');
 
   let writeableStreamAlbums = fs.createWriteStream(`./data/albums.json`);
+  writeableStreamAlbums.write('[\n');
   albums.map.forEach((item, i) => {
-    writeableStreamAlbums.write(JSON.stringify(item) + "\n");
+    writeableStreamAlbums.write(JSON.stringify(item) + ",\n");
   });
+  writeableStreamAlbums.end('{}\n]');
 
   let writeableStreamArtists = fs.createWriteStream(`./data/artists.json`);
+  writeableStreamArtists.write('[\n');
   artists.map.forEach((item, i) => {
-    writeableStreamArtists.write(JSON.stringify(item) + "\n");
+    writeableStreamArtists.write(JSON.stringify(item) + ",\n");
   });
+  writeableStreamArtists.end('{}\n]');
 
   let writeableStreamLabels = fs.createWriteStream(`./data/labels.json`);
+  writeableStreamLabels.write('[\n');
   labels.map.forEach((item, i) => {
-    writeableStreamLabels.write(JSON.stringify(item) + "\n");
+    writeableStreamLabels.write(JSON.stringify(item) + ",\n");
   });
+  writeableStreamLabels.end('{}\n]');
 
   let writeableStreamGenres = fs.createWriteStream(`./data/genres.json`);
+  writeableStreamGenres.write('[\n');
   genres.map.forEach((item, i) => {
-    writeableStreamGenres.write(JSON.stringify(item) + "\n");
+    writeableStreamGenres.write(JSON.stringify(item) + ",\n");
   });
-
-  //for ([key, value] of songs.map) {
-  //  fs.writeFileSync(`./data/songs.json`, JSON.stringify(songs.map.get(value.id)), (err) => {
-  //    if (err) throw err;
-  //  });
-  //}
-  //for ([key, value] of albums.map) {
-  //  fs.writeFileSync(`./data/albums.json`, JSON.stringify(albums.map.get(value.id)), (err) => {
-  //    if (err) throw err;
-  //  });
-  //}
-  //for ([key, value] of artists.map) {
-  //  fs.writeFileSync(`./data/artists.json`, JSON.stringify(artists.map.get(value.id)), (err) => {
-  //    if (err) throw err;
-  //  });
-  //}
-  //for ([key, value] of labels.map) {
-  //  fs.writeFileSync(`./data/labels.json`, JSON.stringify(labels.map.get(value.id)), (err) => {
-  //    if (err) throw err;
-  //  });
-  //}
-  //for ([key, value] of genres.map) {
-  //  fs.writeFileSync(`./data/genres.json`, JSON.stringify(genres.map.get(value.id)), (err) => {
-  //    if (err) throw err;
-  //  });
-  //}
+  writeableStreamGenres.end('{}\n]');
 }
 
 function parseFiles() {
-    fs.readdirSync('./data/', function (err, list) {
-      if (err) throw err;
-      for (value of list) {
-        if (value.slice(0, -5) ===  "songs") {
-          fs.readFile(`./data/${value}`, function (err, forParse) {
-            let parse_songs = JSON.parse(forParse);
-            return parse_songs;
+  console.log('lets parse');
+
+  let data = fs.readdirSync('./data/');
+
+  let counter = 0;
+
+  data.forEach((item, i) => {
+    fs.readFile(`./data/${item}`, function (err, forParse) {
+      counter++;
+      let parse = JSON.parse(forParse);
+      switch(item) {
+        case 'songs.json':
+          songs.map.clear();
+          songs.iterator = -1;
+          parse.forEach((item, i) => {
+            const song = songs.new()
+                              .setName(String(parse[i].name))
+                              .setDuration(Number(parse[i].duration))
+                              .setReleased(Number(parse[i].released))
+                              .setText(String(parse[i].text))
+                              .setBPM(Number(parse[i].bpm))
+                              .setExplicit(Boolean(parse[i].explicit))
+                              .setFileID(Number(parse[i].fileID))
+                              .setAlbum(Number(parse[i].albumID))
+                              .setArtist(Number(parse[i].artistID))
+                              .setGenre(Number(parse[i].genreID));
+            songs.set(song);
           });
-        };
-        if (value.slice(0, -5) ===  "artists") {
-          fs.readFile(`./data/${value}`, function (err, forParse) {
-            let parse_artists = JSON.parse(forParse);
-            return parse_artists;
-          });
-        };
-        if (value.slice(0, -5) ===  "albums") {
-          fs.readFile(`./data/${value}`, function (err, forParse) {
-            let parse_albums = JSON.parse(forParse);
-            return parse_albums;
-          });
-        };
-        if (value.slice(0, -5) ===  "labels") {
-          fs.readFile(`./data/${value}`, function (err, forParse) {
-            let parse_labels = JSON.parse(forParse);
-            return parse_labels;
-          });
-        };
-        if (value.slice(0, -5) ===  "genres") {
-          fs.readFile(`./data/${value}`, function (err, forParse) {
-            let parse_genres = JSON.parse(forParse);
-            return parse_genres;
-          });
-        };
+          break;
+         case 'albums.json':
+           albums.map.clear();
+           albums.iterator = -1;
+           parse.forEach((item, i) => {
+             const album = albums.new()
+                                 .setAlbum(Number(parse[i].album))
+                                 .setReleased(Number(parse[i].released))
+                                 .setBio(String(parse[i].bio))
+                                 .setCover(String(parse[i].cover));
+             albums.set(album);
+           });
+           break;
+         case 'artists.json':
+           artists.map.clear();
+           artists.iterator = -1;
+           parse.forEach((item, i) => {
+             const atrist = artists.new()
+                                   .setName(String(parse[i].name))
+                                   .setGender(Number(parse[i].gender))
+                                   .setBand(Boolean(parse[i].band))
+                                   .setBio(String(parse[i].bio));
+             artists.set(atrist);
+           });
+           break;
+         case 'genres.json':
+           genres.map.clear();
+           genres.iterator = -1;
+           parse.forEach((item, i) => {
+             const genre = genres.new()
+                               .setGenre(String(parse[i].genre))
+                               .setBio(String(parse[i].bio));
+             genres.set(genre);
+           });
+           break;
+         case 'labels.json':
+           genres.map.clear();
+           genres.iterator = -1;
+           parse.forEach((item, i) => {
+             const label = labels.new()
+                                 .setName(String(parse[i].name))
+                                 .setBio(String(parse[i].bio));
+             labels.set(label);
+           });
+           break;
+         default:
+           console.log('oops!')
+           break;
       }
+       if (counter === 5) {
+         console.log('All files downloaded');
+       }
     });
+  });
 }
 
 const albums = new Albums();
@@ -604,4 +630,4 @@ genres.set(genre);
 
 saveFiles (songs, albums, artists, labels, genres);
 setInterval (() => saveFiles (songs, albums, artists, labels, genres), 5000);
-parseFiles();
+setTimeout (() => parseFiles(), 1000);

@@ -1,1 +1,5 @@
-{"id":0,"name":"Drake","gender":1,"band":false,"bio":"Canadian rapper, singer, songwriter, executive producer, actor, and entrepreneur"}
+[
+{"id":0,"name":"Drake","gender":1,"band":false,"bio":"Canadian rapper, singer, songwriter, executive producer, actor, and entrepreneur"},
+{"id":1,"name":"undefined","gender":null,"band":false,"bio":"undefined"},
+{}
+]

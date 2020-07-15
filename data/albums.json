@@ -1,1 +1,5 @@
-{"id":0,"album":0,"released":"2023-03-28T11:37:30.303Z","bio":"Some random text for example","cover":"./covers/randomcover.jpg","labelID":0,"artistID":0,"genreID":0}
+[
+{"id":0,"album":0,"released":null,"bio":"Some random text for example","cover":"./covers/randomcover.jpg"},
+{"id":1,"album":null,"released":null,"bio":"undefined","cover":"undefined"},
+{}
+]
