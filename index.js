@@ -1,4 +1,13 @@
 fs = require('fs');
+let mimeTypes = {
+  "html": "text/html",
+  "png": "image/png",
+  "jpg": "image/png",
+  "css":"text/css",
+  "js":"text/javascript",
+  "rar": "application/x-rar-compressed",
+  "zip": "application/zip"
+}
 
 class Entity {
   constructor(id) {
@@ -445,39 +454,64 @@ function saveFiles(songs, albums, artists, labels, genres) {
   console.log('lets save');
 
   let writeableStreamSongs = fs.createWriteStream(`./data/songs.json`);
-  writeableStreamSongs.write('[\n');
+  let songsCount = 0;
+  writeableStreamSongs.write("[\n");
   songs.map.forEach((item, i) => {
-    writeableStreamSongs.write(JSON.stringify(item) + ",\n");
+    songsCount ++;
+    if (songsCount > 1) {
+      writeableStreamSongs.write(",\n");
+    }
+    writeableStreamSongs.write(JSON.stringify(item));
   });
-  writeableStreamSongs.end('{}\n]');
+  writeableStreamSongs.end('\n]');
 
   let writeableStreamAlbums = fs.createWriteStream(`./data/albums.json`);
+  let albumsCount = 0;
   writeableStreamAlbums.write('[\n');
   albums.map.forEach((item, i) => {
-    writeableStreamAlbums.write(JSON.stringify(item) + ",\n");
+    albumsCount++
+    if (albumsCount > 1) {
+      writeableStreamAlbums.write(",\n");
+    }
+    writeableStreamAlbums.write(JSON.stringify(item))
   });
-  writeableStreamAlbums.end('{}\n]');
+  writeableStreamAlbums.end('\n]');
 
   let writeableStreamArtists = fs.createWriteStream(`./data/artists.json`);
+  let artistsCount = 0;
   writeableStreamArtists.write('[\n');
   artists.map.forEach((item, i) => {
-    writeableStreamArtists.write(JSON.stringify(item) + ",\n");
+    artistsCount++
+    if (artistsCount > 1) {
+      writeableStreamArtists.write(",\n");
+    }
+    writeableStreamArtists.write(JSON.stringify(item));
   });
-  writeableStreamArtists.end('{}\n]');
+  writeableStreamArtists.end('\n]');
 
   let writeableStreamLabels = fs.createWriteStream(`./data/labels.json`);
+  let labelCount = 0;
   writeableStreamLabels.write('[\n');
   labels.map.forEach((item, i) => {
-    writeableStreamLabels.write(JSON.stringify(item) + ",\n");
+    labelCount++;
+    if (labelCount > 1) {
+      writeableStreamLabels.write(",\n");
+    }
+    writeableStreamLabels.write(JSON.stringify(item));
   });
-  writeableStreamLabels.end('{}\n]');
+  writeableStreamLabels.end('\n]');
 
   let writeableStreamGenres = fs.createWriteStream(`./data/genres.json`);
+  let genresCount = 0;
   writeableStreamGenres.write('[\n');
   genres.map.forEach((item, i) => {
-    writeableStreamGenres.write(JSON.stringify(item) + ",\n");
+    genresCount++
+    if (genresCount > 1) {
+      writeableStreamGenres.write(",\n");
+    }
+    writeableStreamGenres.write(JSON.stringify(item));
   });
-  writeableStreamGenres.end('{}\n]');
+  writeableStreamGenres.end('\n]');
 }
 
 function parseFiles() {
@@ -499,7 +533,7 @@ function parseFiles() {
             const song = songs.new()
                               .setName(String(parse[i].name))
                               .setDuration(Number(parse[i].duration))
-                              .setReleased(Number(parse[i].released))
+                              .setReleased(Date.parse(parse[i].released))
                               .setText(String(parse[i].text))
                               .setBPM(Number(parse[i].bpm))
                               .setExplicit(Boolean(parse[i].explicit))
@@ -516,7 +550,7 @@ function parseFiles() {
            parse.forEach((item, i) => {
              const album = albums.new()
                                  .setAlbum(Number(parse[i].album))
-                                 .setReleased(Number(parse[i].released))
+                                 .setReleased(Date.parse(parse[i].released))
                                  .setBio(String(parse[i].bio))
                                  .setCover(String(parse[i].cover));
              albums.set(album);
@@ -565,6 +599,55 @@ function parseFiles() {
   });
 }
 
+function search(text) {
+  if (text != 'string') {
+    text = text.toString();
+  }
+  let splitedText = text.split(' ');
+  console.log(splitedText);
+  let matches = [];
+
+  songs.map.forEach((item, i) => {
+    let countSongMatch = 0;
+    for (value of splitedText) {
+      if (item.name.indexOf(value) > -1) {
+        countSongMatch++;
+      }
+    }
+    if (countSongMatch != 0) {
+      let match = {};
+      match.name = item.name;
+      match.countMatch = countSongMatch;
+      match.id = item.id;
+      match.type = 'song';
+      matches.push(match);
+    }
+  });
+
+  artists.map.forEach((item, i) => {
+    let countArtistMatch = 0;
+    for (value of splitedText) {
+      if (item.name.indexOf(value) > -1) {
+        countArtistMatch++;
+      }
+    }
+    if (countArtistMatch != 0) {
+      let match = {};
+      match.name = item.name;
+      match.countMatch = countArtistMatch;
+      match.id = item.id;
+      match.type = 'artist';
+      matches.push(match);
+    }
+  });
+
+  matches.sort(function(a, b) {
+    return b.countMatch - a.countMatch;
+  }
+);
+  return matches;
+}
+
 const albums = new Albums();
 const songs = new Songs();
 const labels = new Labels();
@@ -587,23 +670,449 @@ const song = songs.new()
                   .setFileID(0);
 
 const song_01 = songs.new()
-                  .setName('58')
-                  .setDuration(151000)
-                  .setReleased(1690003450303)
-                  .setText('Some random text for example')
-                  .setBPM(60)
-                  .setExplicit(true)
-                  .setFileID(1);
+                     .setName('58')
+                     .setDuration(151000)
+                     .setReleased(1690003450303)
+                     .setText('Some random text for example')
+                     .setBPM(60)
+                     .setExplicit(true)
+                     .setFileID(1);
+
+const song_02 = songs.new()
+                     .setName('Seven Nation Army')
+                     .setDuration(231000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(105)
+                     .setExplicit(true)
+                     .setFileID(2);
+
+const song_03 = songs.new()
+                     .setName('Move ya hips')
+                     .setDuration(231000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(105)
+                     .setExplicit(true)
+                     .setFileID(3);
+
+const song_04 = songs.new()
+                     .setName('Neon Clouds')
+                     .setDuration(239000)
+                     .setReleased(1760003450303)
+                     .setText('Some random text for example')
+                     .setBPM(60)
+                     .setExplicit(true)
+                     .setFileID(4);
+
+const song_05 = songs.new()
+                     .setName('Drinks')
+                     .setDuration(131000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(140)
+                     .setExplicit(true)
+                     .setFileID(5);
+
+const song_06 = songs.new()
+                     .setName('Bitch')
+                     .setDuration(431000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(105)
+                     .setExplicit(true)
+                     .setFileID(6);
+
+const song_07 = songs.new()
+                     .setName('Bandit')
+                     .setDuration(341000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(60)
+                     .setExplicit(true)
+                     .setFileID(7);
+
+const song_08 = songs.new()
+                     .setName('Be my Queen')
+                     .setDuration(521000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(140)
+                     .setExplicit(true)
+                     .setFileID(8);
+
+const song_09 = songs.new()
+                     .setName('Гвозди')
+                     .setDuration(191000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(105)
+                     .setExplicit(true)
+                     .setFileID(9);
+
+const song_10 = songs.new()
+                     .setName('Стреляй')
+                     .setDuration(4131000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(60)
+                     .setExplicit(true)
+                     .setFileID(10);
+
+const song_11 = songs.new()
+                     .setName('This City')
+                     .setDuration(521000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(140)
+                     .setExplicit(true)
+                     .setFileID(11);
+
+const song_12 = songs.new()
+                     .setName('The world is mine')
+                     .setDuration(961000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(105)
+                     .setExplicit(true)
+                     .setFileID(12);
+
+const song_13 = songs.new()
+                     .setName('Still feel')
+                     .setDuration(231000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(60)
+                     .setExplicit(true)
+                     .setFileID(13);
+
+const song_14 = songs.new()
+                     .setName('Its Called Freefall')
+                     .setDuration(231000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(140)
+                     .setExplicit(true)
+                     .setFileID(14);
+
+const song_15 = songs.new()
+                     .setName('Тактика атаки')
+                     .setDuration(231000)
+                     .setReleased(1360003450303)
+                     .setText('Some random text for example')
+                     .setBPM(105)
+                     .setExplicit(true)
+                     .setFileID(15);
+
+const song_16 = songs.new()
+                    .setName('Алмаз Сознания')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_17 = songs.new()
+                    .setName('Долгополов фристайл')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_18 = songs.new()
+                    .setName('Wishing Well')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_19 = songs.new()
+                    .setName('Stuck in a dream')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_20 = songs.new()
+                    .setName('Sick and tired')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_21 = songs.new()
+                    .setName('Happy home')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_22 = songs.new()
+                    .setName('Скил')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_23 = songs.new()
+                    .setName('Chicago Freestyle')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_24 = songs.new()
+                    .setName('Коалко')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_25 = songs.new()
+                    .setName('Hell n Back')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_26 = songs.new()
+                    .setName('Told ya')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_27 = songs.new()
+                    .setName('Mazel tov')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_28 = songs.new()
+                    .setName('Swish')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
+
+const song_29 = songs.new()
+                    .setName('Magic')
+                    .setDuration(231000)
+                    .setReleased(1360003450303)
+                    .setText('Some random text for example')
+                    .setBPM(105)
+                    .setExplicit(true)
+                    .setFileID(15);
 
 const label = labels.new()
-                   .setName('Republic')
-                   .setBio('Some random text for example');
+                    .setName('Republic')
+                    .setBio('Some random text for example');
 
 const artist = artists.new()
                       .setName('Drake')
                       .setGender(1)
                       .setBand(false)
                       .setBio('Canadian rapper, singer, songwriter, executive producer, actor, and entrepreneur');
+
+const artist_01 = artists.new()
+                        .setName('Егор крид')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_02 = artists.new()
+                        .setName('The white stripes')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_03 = artists.new()
+                        .setName('Asap ferg')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_04 = artists.new()
+                        .setName('Thomas Mraz')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_05 = artists.new()
+                        .setName('Cyn')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_06 = artists.new()
+                        .setName('Pouya')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_07 = artists.new()
+                        .setName('Juice wrld')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_08 = artists.new()
+                        .setName('Seafret')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_09 = artists.new()
+                        .setName('Loqiemean')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_10 = artists.new()
+                        .setName('Truwer')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_11 = artists.new()
+                        .setName('Sam fischer')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_12 = artists.new()
+                        .setName('Samm henshaw')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_13 = artists.new()
+                        .setName('half alive')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_14 = artists.new()
+                        .setName('Rainbow kitten surprise')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_15 = artists.new()
+                        .setName('Обстоятельства')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_16 = artists.new()
+                        .setName('Gone.fludd')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_17 = artists.new()
+                        .setName('Basic boy')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_18 = artists.new()
+                        .setName('Juice wrld')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_19 = artists.new()
+                        .setName('Lil mosey')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_20 = artists.new()
+                        .setName('iann dior')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_21 = artists.new()
+                        .setName('X ambassadors')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_22 = artists.new()
+                        .setName('104')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_23 = artists.new()
+                        .setName('Drake')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_24 = artists.new()
+                        .setName('Loqiemean')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_25 = artists.new()
+                        .setName('Azizi gibson')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_26 = artists.new()
+                        .setName('Lil Xan')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_27 = artists.new()
+                        .setName('Asap ferg')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_28 = artists.new()
+                        .setName('Mike stud')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
+
+const artist_29 = artists.new()
+                        .setName('Lil skies')
+                        .setGender(1)
+                        .setBand(false)
+                        .setBio('Some random text for example');
 
 const genre = genres.new()
                     .setGenre('Rap')
@@ -624,10 +1133,187 @@ album.setLabel(label)
 albums.set(album);
 songs.set(song);
 songs.set(song_01);
+songs.set(song_02);
+songs.set(song_03);
+songs.set(song_04);
+songs.set(song_05);
+songs.set(song_06);
+songs.set(song_07);
+songs.set(song_08);
+songs.set(song_09);
+songs.set(song_10);
+songs.set(song_11);
+songs.set(song_12);
+songs.set(song_13);
+songs.set(song_14);
+songs.set(song_15);
+songs.set(song_16);
+songs.set(song_17);
+songs.set(song_18);
+songs.set(song_19);
+songs.set(song_20);
+songs.set(song_21);
+songs.set(song_22);
+songs.set(song_23);
+songs.set(song_24);
+songs.set(song_25);
+songs.set(song_26);
+songs.set(song_27);
+songs.set(song_28);
+songs.set(song_29);
 labels.set(label);
 artists.set(artist);
+artists.set(artist_01);
+artists.set(artist_02);
+artists.set(artist_03);
+artists.set(artist_04);
+artists.set(artist_05);
+artists.set(artist_06);
+artists.set(artist_07);
+artists.set(artist_08);
+artists.set(artist_09);
+artists.set(artist_10);
+artists.set(artist_11);
+artists.set(artist_12);
+artists.set(artist_13);
+artists.set(artist_14);
+artists.set(artist_15);
+artists.set(artist_16);
+artists.set(artist_17);
+artists.set(artist_18);
+artists.set(artist_19);
+artists.set(artist_20);
+artists.set(artist_21);
+artists.set(artist_22);
+artists.set(artist_23);
+artists.set(artist_24);
+artists.set(artist_25);
+artists.set(artist_26);
+artists.set(artist_27);
+artists.set(artist_28);
+artists.set(artist_29);
 genres.set(genre);
 
+function router (req, res, requestedFile) {
+  console.log('run router');
+  let dataURL = [
+    {url: /^\/$/, function: getHello},
+    {url: /^\/api\/songs/, function: getSongs},
+    {url: /^\/api\/artists/, function: getArtists},
+    {url: /^\/api\/search/, function: getSearch}
+    // {url: /^\/css\/master.css/, function: getCss }
+  ];
+  for (value of dataURL) {
+    console.log(`${value.url} vs ${requestedFile} + ${value.url.test(requestedFile)}`);
+    if (value.url.test(requestedFile)) {
+      value.function(req, res, requestedFile);
+      return true;
+    }
+  }
+  loadFile(req, res, requestedFile);
+}
+
+function loadFile(req, res, requestedFile) {
+
+  let rootDirectory = '/frontend/';
+  let path = require('path');
+  let filename = path.join(rootDirectory, requestedFile);
+  console.log('THIS:', filename)
+  if (filename.indexOf(rootDirectory) !== 0) {
+    return respond('trying to sneak out of the web root?');
+  }
+
+  let fileExtension = requestedFile.split(".");
+  let fileType = fileExtension[fileExtension.length-1];
+  let contentType = 'application/octet-stream';
+  if (typeof mimeTypes[fileType] !== "undefined") {
+  contentType = mimeTypes[fileType];
+  }
+  console.log(fileType);
+  console.log(contentType);
+  console.log(requestedFile);
+
+  res.setHeader('Content-Type', `${contentType}; utf-8`);
+  let readStream = fs.ReadStream('.' + filename);
+  res.statusCode = 200;
+  readStream.pipe(res);
+}
+
+
+// function getCss (req, res) {
+//   res.setHeader('Content-Type', 'text/css; utf-8;');
+//   let readStream = fs.ReadStream(`./css/master.css`);
+//   res.statusCode = 200;
+//   readStream.pipe(res);
+// }
+
+function getHello (req, res) {
+  res.setHeader('Content-Type', 'text/html; utf-8;');
+  let readStream = fs.ReadStream(`./frontend/interface/menu.html`);
+  res.statusCode = 200;
+  readStream.pipe(res);
+}
+
+function getSongs(req, res) {
+  let data = [];
+  songs.map.forEach((item, i) => {
+    if (i < 30) {
+      data.push(item);
+    }
+  });
+  res.end(JSON.stringify(data));
+}
+
+function getArtists(req, res) {
+  let data = [];
+  artists.map.forEach((item, i) => {
+    if (i < 30) {
+      data.push(item);
+    }
+  });
+  res.end(JSON.stringify(data));
+}
+
+function getSearch(req, res, requestedFile) {
+  let [address, query] = requestedFile.split('?');
+  if (query) {
+    console.log(query);
+    let [key, value] = query.split('=');
+    if (value === '') {
+      res.end('You did not fill the form');
+    }
+    let result = search(value);
+    res.end(JSON.stringify(result));
+  }
+}
+
 saveFiles (songs, albums, artists, labels, genres);
-setInterval (() => saveFiles (songs, albums, artists, labels, genres), 5000);
+//setInterval (() => saveFiles (songs, albums, artists, labels, genres), 5000);
 setTimeout (() => parseFiles(), 1000);
+
+//setTimeout (() => search('58 Toosie Slide error Drake Republic Seven Nation Army Егор крид гвозди'), 2000);
+
+const http = require('http');
+const port = 3000;
+const server = http.createServer();
+
+server.on('request', function(req, res) {
+  let requestedFile = decodeURI(req.url);
+  let data = '';
+
+  req.on('data', function(chunk) {
+    data += chunk.toString();
+  });
+
+  req.on('end', function() {
+    res.setHeader('Content-Type', 'application/json');
+    res.statusCode = 200;
+    router(req, res, requestedFile);
+  });
+});
+
+server.listen(port, (err) => {
+    if (err) {
+        return console.log('something bad happened', err);
+    }    console.log(`server is listening on ${port}`);
+});

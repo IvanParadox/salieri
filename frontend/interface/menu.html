@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8">
+  <script src="https://kit.fontawesome.com/eb96a4e2ba.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link href="./css/master.css" rel="stylesheet">
+  <title>Salieri</title>
+
+ </head>
+
+ <body>
+  <div class="container">
+    <div class="header">
+    </div>
+
+  <div class="toolbar">
+    <div class = "logo">
+      <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_White.png" width="150" height="45">
+     </div>
+    <div class ="navigation">
+       <div class="nav_bag">
+         <a class="nav_button" href="#">
+           <i class="fas fa-home fa-lg"></i>
+         </a>
+         <div class="nav_text">Home</div>
+       </div>
+       <div class="nav_bag">
+         <a class="nav_button" href="#">
+           <i class="fas fa-search"></i>
+         </a>
+         <form action="/api/search/">
+           <input class="input" type="text" name="q" placeholder="Search">
+         </form>
+       </div>
+       <div class="nav_bag">
+         <a class="nav_button" href="#">
+           <i class="fas fa-box-open fa-lg"></i>
+         </a>
+         <div class="nav_text">Your library</div>
+       </div>
+       <div class="split"></div>
+     </div>
+   </div>
+
+   <div class="main">
+     <table>
+      <caption>Songs</caption>
+      <thead>
+        <tr>
+         <th>Name</th>
+         <th>Date</th>
+         <th>Text</th>
+         <th>ID</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+       <!-- <div class="section">
+       </div> -->
+     </table>
+   </div>
+  </div>
+
+  <script>
+    const section = document.querySelector('tbody');
+
+    let xhrURL = ('/api/songs/')
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', xhrURL);
+    xhr.responseType = 'json';
+    xhr.send();
+
+    xhr.onload = function() {
+      const songsData = xhr.response;
+      showSongs(songsData);
+    };
+
+    function showSongs(jsonObj) {
+      for (var i = 0; i < jsonObj.length; i++) {
+        var myArticle = document.createElement('tr');
+        // myArticle.className = 'article';
+        var myH2 = document.createElement('td');
+        var myPara1 = document.createElement('td');
+        var myPara2 = document.createElement('td');
+        var myPara3 = document.createElement('td');
+
+        myH2.textContent = jsonObj[i].name;
+        myPara1.textContent = jsonObj[i].released;
+        myPara2.textContent = jsonObj[i].text;
+        myPara3.textContent = jsonObj[i].id;
+
+        myArticle.appendChild(myH2);
+        myArticle.appendChild(myPara1);
+        myArticle.appendChild(myPara2);
+        myArticle.appendChild(myPara3);
+
+        section.appendChild(myArticle);
+    }
+  }
+  </script>
+ </body>
+</html>
