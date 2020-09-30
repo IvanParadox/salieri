@@ -1,4 +1,4 @@
-fs = require('fs');
+const fs = require('fs');
 let mimeTypes = {
   "html": "text/html",
   "png": "image/png",
@@ -1217,7 +1217,8 @@ function loadFile(req, res, requestedFile) {
 
   let rootDirectory = '/frontend/';
   let path = require('path');
-  let filename = path.join(rootDirectory, requestedFile);
+  let normalizedFile = path.normalize(requestedFile);
+  let filename = path.join(rootDirectory, normalizedFile);
   console.log('THIS:', filename)
   if (filename.indexOf(rootDirectory) !== 0) {
     return respond('trying to sneak out of the web root?');
@@ -1227,14 +1228,14 @@ function loadFile(req, res, requestedFile) {
   let fileType = fileExtension[fileExtension.length-1];
   let contentType = 'application/octet-stream';
   if (typeof mimeTypes[fileType] !== "undefined") {
-  contentType = mimeTypes[fileType];
+    contentType = mimeTypes[fileType];
   }
   console.log(fileType);
   console.log(contentType);
   console.log(requestedFile);
 
   res.setHeader('Content-Type', `${contentType}; utf-8`);
-  let readStream = fs.ReadStream('.' + filename);
+  let readStream = fs.ReadStream('.' + `${filename}`);
   res.statusCode = 200;
   readStream.pipe(res);
 }
