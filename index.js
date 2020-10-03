@@ -677,7 +677,7 @@ const song = songs.new()
                   .setText('Some random text for example')
                   .setBPM(140)
                   .setExplicit(false)
-                  .setFileID(0);
+                  .setFileID(0)
                   .setSongPath('./music/MRKkd4nSC7zH.mp3');
 
 const song_01 = songs.new()
