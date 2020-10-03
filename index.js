@@ -191,6 +191,16 @@ class Song extends Entity { //наследование свойств из ро�
       return this;
   }
 
+  getSongPath() {
+    return this.songPath;
+  }
+
+  setSongPath(songPath) {
+    if (typeof songPath !== 'string' || songPath === null || songPath === '') throw new Error ('invalid cover');
+      this.songPath = songPath;
+      return this;
+  }
+
   isValid() {
     return typeof this.name !== 'undefined' &&
     typeof this.albumID !== 'undefined' &&
@@ -668,6 +678,7 @@ const song = songs.new()
                   .setBPM(140)
                   .setExplicit(false)
                   .setFileID(0);
+                  .setSongPath('./music/MRKkd4nSC7zH.mp3');
 
 const song_01 = songs.new()
                      .setName('58')
@@ -1213,31 +1224,38 @@ function router (req, res, requestedFile) {
   loadFile(req, res, requestedFile);
 }
 
+// function getMusic(req, res, requestedFile) {
+//   res.setHeader('Content-Type', 'audio/mpeg; utf-8;');
+//   let readStream = fs.ReadStream('.' + `${requestedFile}`);
+//   res.statusCode = 200;
+//   readStream.pipe(res);
+// }
+
 function loadFile(req, res, requestedFile) {
 
-  let rootDirectory = '/frontend/';
-  let path = require('path');
-  let normalizedFile = path.normalize(requestedFile);
-  let filename = path.join(rootDirectory, normalizedFile);
-  console.log('THIS:', filename)
-  if (filename.indexOf(rootDirectory) !== 0) {
-    return respond('trying to sneak out of the web root?');
-  }
+  try {
+    let rootDirectory = '/frontend/';
+    let path = require('path');
+    let normalizedFile = path.normalize(requestedFile);
+    let filename = path.join(rootDirectory, normalizedFile);
 
-  let fileExtension = requestedFile.split(".");
-  let fileType = fileExtension[fileExtension.length-1];
-  let contentType = 'application/octet-stream';
-  if (typeof mimeTypes[fileType] !== "undefined") {
-    contentType = mimeTypes[fileType];
-  }
-  console.log(fileType);
-  console.log(contentType);
-  console.log(requestedFile);
+    let fileExtension = requestedFile.split(".");
+    let fileType = fileExtension[fileExtension.length-1];
+    let contentType = 'application/octet-stream';
+    if (typeof mimeTypes[fileType] !== "undefined") {
+      contentType = mimeTypes[fileType];
+    }
+    console.log(fileType);
+    console.log(contentType);
+    console.log(requestedFile);
 
-  res.setHeader('Content-Type', `${contentType}; utf-8`);
-  let readStream = fs.ReadStream('.' + `${filename}`);
-  res.statusCode = 200;
-  readStream.pipe(res);
+    res.setHeader('Content-Type', `${contentType}; utf-8`);
+    let readStream = fs.ReadStream('.' + `${filename}`);
+    res.statusCode = 200;
+    readStream.pipe(res);
+  } catch (e) {
+    res.statusCode = 404;
+  }
 }
 
 

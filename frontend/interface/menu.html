@@ -41,6 +41,10 @@
        </div>
        <div class="split"></div>
      </div>
+     <!-- <audio
+        controls
+        src="/music/Drake-toosie-slide.mp3">
+    </audio> -->
    </div>
 
    <div class="main">
@@ -55,10 +59,7 @@
         </tr>
       </thead>
       <tbody>
-
       </tbody>
-       <!-- <div class="section">
-       </div> -->
      </table>
    </div>
   </div>
@@ -78,27 +79,29 @@
     };
 
     function showSongs(jsonObj) {
-      for (var i = 0; i < jsonObj.length; i++) {
-        var myArticle = document.createElement('tr');
-        // myArticle.className = 'article';
-        var myH2 = document.createElement('td');
-        var myPara1 = document.createElement('td');
-        var myPara2 = document.createElement('td');
-        var myPara3 = document.createElement('td');
+      for (let i = 0; i < jsonObj.length; i++) {
+        let article = document.createElement('tr');
+        let name = document.createElement('td');
+        let released = document.createElement('td');
+        let text = document.createElement('td');
+        let id = document.createElement('td');
+        let audio = document.createElement('audio');
 
-        myH2.textContent = jsonObj[i].name;
-        myPara1.textContent = jsonObj[i].released;
-        myPara2.textContent = jsonObj[i].text;
-        myPara3.textContent = jsonObj[i].id;
+        name.textContent = jsonObj[i].name;
+        released.textContent = jsonObj[i].released;
+        text.textContent = jsonObj[i].text;
+        id.textContent = jsonObj[i].id;
+        audio.src.textContent = jsonObj[i].id;
 
-        myArticle.appendChild(myH2);
-        myArticle.appendChild(myPara1);
-        myArticle.appendChild(myPara2);
-        myArticle.appendChild(myPara3);
+        article.appendChild(name);
+        article.appendChild(released);
+        article.appendChild(text);
+        article.appendChild(id);
+        article.appendChild(audio);
 
-        section.appendChild(myArticle);
+        section.appendChild(article);
+      }
     }
-  }
   </script>
  </body>
 </html>

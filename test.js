@@ -1,15 +1,24 @@
-function loadFile(requestedFile) {
+let a = 1;
+let b = 2
+let c = 3;
+let err = 4
 
-  let rootDirectory = '/frontend/css/';
-  const path = require('path');
-  console.log(requestedFile);
-  let file = path.normalize(requestedFile);
-  console.log(file);
-  let filename = path.join(rootDirectory, file);
-  console.log('THIS:', filename)
-  if (filename.indexOf(rootDirectory) !== 0) {
-    console.log('trying to sneak out of the web root?');
-  }
+function A(a,b,c,err){
+  console.log('1');
 }
 
-loadFile('/../../xx/');
+function B(err,a,b,c){
+  console.log(arguments);
+    A.apply(arguments);
+}
+
+B (err,a,b,c);
+
+function B() {
+ let args = [];
+ for (let i = 1; i < arguments.length; i++) {
+   args.push(arguments[i])
+ }
+ args.push(arguments[0])
+ return A.apply(this, args)
+}
