@@ -192,12 +192,12 @@ class Song extends Entity { //наследование свойств из ро�
   }
 
   getSongPath() {
-    return this.songPath;
+    return this.path;
   }
 
-  setSongPath(songPath) {
-    if (typeof songPath !== 'string' || songPath === null || songPath === '') throw new Error ('invalid cover');
-      this.songPath = songPath;
+  setSongPath(path) {
+    if (typeof path !== 'string' || path === null || path === '') throw new Error ('invalid cover');
+      this.path = path;
       return this;
   }
 
@@ -550,7 +550,8 @@ function parseFiles() {
                               .setFileID(Number(parse[i].fileID))
                               .setAlbum(Number(parse[i].albumID))
                               .setArtist(Number(parse[i].artistID))
-                              .setGenre(Number(parse[i].genreID));
+                              .setGenre(Number(parse[i].genreID))
+                              .setSongPath(String(parse[i].path));
             songs.set(song);
           });
           break;
@@ -678,7 +679,7 @@ const song = songs.new()
                   .setBPM(140)
                   .setExplicit(false)
                   .setFileID(0)
-                  .setSongPath('./music/MRKkd4nSC7zH.mp3');
+                  .setSongPath('/music/MRKkd4nSC7zH.mp3');
 
 const song_01 = songs.new()
                      .setName('58')
@@ -687,7 +688,8 @@ const song_01 = songs.new()
                      .setText('Some random text for example')
                      .setBPM(60)
                      .setExplicit(true)
-                     .setFileID(1);
+                     .setFileID(1)
+                     .setSongPath('/music/UkpuuEzF0rBh.mp3');
 
 const song_02 = songs.new()
                      .setName('Seven Nation Army')
@@ -696,7 +698,8 @@ const song_02 = songs.new()
                      .setText('Some random text for example')
                      .setBPM(105)
                      .setExplicit(true)
-                     .setFileID(2);
+                     .setFileID(2)
+                     .setSongPath('/music/DRwzmr5Q03bz.mp3');
 
 const song_03 = songs.new()
                      .setName('Move ya hips')
@@ -1211,7 +1214,9 @@ function router (req, res, requestedFile) {
     {url: /^\/$/, function: getHello},
     {url: /^\/api\/songs/, function: getSongs},
     {url: /^\/api\/artists/, function: getArtists},
-    {url: /^\/api\/search/, function: getSearch}
+    {url: /^\/api\/search/, function: getSearch},
+    {url: /^\/music/, function: getMusic},
+    {url: /^\/undefined/, function: getError}
     // {url: /^\/css\/master.css/, function: getCss }
   ];
   for (value of dataURL) {
@@ -1224,12 +1229,16 @@ function router (req, res, requestedFile) {
   loadFile(req, res, requestedFile);
 }
 
-// function getMusic(req, res, requestedFile) {
-//   res.setHeader('Content-Type', 'audio/mpeg; utf-8;');
-//   let readStream = fs.ReadStream('.' + `${requestedFile}`);
-//   res.statusCode = 200;
-//   readStream.pipe(res);
-// }
+function getError(req, res, requestedFile) {
+  res.end();
+}
+
+function getMusic(req, res, requestedFile) {
+  res.setHeader('Content-Type', 'audio/mpeg; utf-8;');
+  let readStream = fs.ReadStream('.' + `${requestedFile}`);
+  res.statusCode = 200;
+  readStream.pipe(res);
+}
 
 function loadFile(req, res, requestedFile) {
 

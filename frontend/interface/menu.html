@@ -41,10 +41,6 @@
        </div>
        <div class="split"></div>
      </div>
-     <!-- <audio
-        controls
-        src="/music/Drake-toosie-slide.mp3">
-    </audio> -->
    </div>
 
    <div class="main">
@@ -56,6 +52,7 @@
          <th>Date</th>
          <th>Text</th>
          <th>ID</th>
+         <th>Listen</th>
         </tr>
       </thead>
       <tbody>
@@ -85,19 +82,22 @@
         let released = document.createElement('td');
         let text = document.createElement('td');
         let id = document.createElement('td');
+        let song = document.createElement('td');
         let audio = document.createElement('audio');
 
         name.textContent = jsonObj[i].name;
         released.textContent = jsonObj[i].released;
         text.textContent = jsonObj[i].text;
         id.textContent = jsonObj[i].id;
-        audio.src.textContent = jsonObj[i].id;
+        audio.controls = 'controls';
+        audio.src = jsonObj[i].path;
 
         article.appendChild(name);
         article.appendChild(released);
         article.appendChild(text);
         article.appendChild(id);
-        article.appendChild(audio);
+        song.appendChild(audio);
+        article.appendChild(song);
 
         section.appendChild(article);
       }
