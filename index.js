@@ -621,7 +621,8 @@ function search(text) {
   songs.map.forEach((item, i) => {
     let countSongMatch = 0;
     for (value of splitedText) {
-      if (item.name.search(value) > -1) {
+      let regexp = new RegExp(value, "gi");
+      if (item.name.search(regexp) > -1) {
         countSongMatch++;
       }
     }
@@ -638,7 +639,8 @@ function search(text) {
   artists.map.forEach((item, i) => {
     let countArtistMatch = 0;
     for (value of splitedText) {
-      if (item.name.search(value) > -1) {
+      let regexp = new RegExp(value, "gi");
+      if (item.name.search(regexp) > -1) {
         countArtistMatch++;
       }
     }

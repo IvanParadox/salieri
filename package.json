@@ -1,0 +1,21 @@
+{
+  "name": "salieri",
+  "version": "0.0.1",
+  "description": "A simple Node app built.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": "https://github.com/IvanParadox/salieri.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "music",
+    "app"
+  ]
+}
