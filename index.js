@@ -621,41 +621,42 @@ function search(text) {
   songs.map.forEach((item, i) => {
     let countSongMatch = 0;
     for (value of splitedText) {
-      if (item.name.indexOf(value) > -1) {
+      if (item.name.search(value) > -1) {
         countSongMatch++;
       }
     }
     if (countSongMatch != 0) {
-      let match = {};
-      match.name = item.name;
-      match.countMatch = countSongMatch;
-      match.id = item.id;
-      match.type = 'song';
-      matches.push(match);
+      // let match = {};
+      // match.name = item.name;
+      // match.countMatch = countSongMatch;
+      // match.id = item.id;
+      // match.type = 'song';
+      matches.push(item);
     }
   });
 
   artists.map.forEach((item, i) => {
     let countArtistMatch = 0;
     for (value of splitedText) {
-      if (item.name.indexOf(value) > -1) {
+      if (item.name.search(value) > -1) {
         countArtistMatch++;
       }
     }
     if (countArtistMatch != 0) {
-      let match = {};
-      match.name = item.name;
-      match.countMatch = countArtistMatch;
-      match.id = item.id;
-      match.type = 'artist';
-      matches.push(match);
+      // let match = {};
+      // match.name = item.name;
+      // match.countMatch = countArtistMatch;
+      // match.id = item.id;
+      // match.type = 'artist';
+      matches.push(item);
     }
   });
 
-  matches.sort(function(a, b) {
-    return b.countMatch - a.countMatch;
-  }
-);
+//   matches.sort(function(a, b) {
+//     return b.countMatch - a.countMatch;
+//   }
+// );
+  console.log(matches);
   return matches;
 }
 
@@ -1319,7 +1320,7 @@ saveFiles (songs, albums, artists, labels, genres);
 //setInterval (() => saveFiles (songs, albums, artists, labels, genres), 5000);
 setTimeout (() => parseFiles(), 1000);
 
-//setTimeout (() => search('58 Toosie Slide error Drake Republic Seven Nation Army Егор крид гвозди'), 2000);
+//setTimeout (() => search('58 Toos кр'), 2000);
 
 const http = require('http');
 const port = 3000;

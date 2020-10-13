@@ -29,8 +29,8 @@
          <a class="nav_button" href="#">
            <i class="fas fa-search"></i>
          </a>
-         <form action="/api/search/">
-           <input class="input" type="text" name="q" placeholder="Search">
+         <form name="search-form" action="">
+           <input class="input" type="text" name="q" placeholder="Search" onchange="search(this.value)">
          </form>
        </div>
        <div class="nav_bag">
@@ -55,7 +55,7 @@
          <th>Listen</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="tbody">
       </tbody>
      </table>
    </div>
@@ -64,9 +64,10 @@
   <script>
     const section = document.querySelector('tbody');
 
-    let xhrURL = ('/api/songs/')
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', xhrURL);
+    method = "GET",
+    xhrURL = ('/api/songs/');
+    xhr.open(method, xhrURL);
     xhr.responseType = 'json';
     xhr.send();
 
@@ -76,6 +77,7 @@
     };
 
     function showSongs(jsonObj) {
+
       for (let i = 0; i < jsonObj.length; i++) {
         let article = document.createElement('tr');
         let name = document.createElement('td');
@@ -101,6 +103,55 @@
 
         section.appendChild(article);
       }
+    }
+
+    function search(value) {
+
+      let xhr = new XMLHttpRequest(),
+      method = "GET",
+      url = "/api/search/?q=";
+      xhr.open(method, url + value);
+      xhr.responseType = 'json';
+      xhr.send();
+
+
+      xhr.onload = function() {
+        const songData = xhr.response;
+        searchSong(songData);
+      };
+    }
+
+    function searchSong(songData) {
+      let oldtbody = document.getElementById("tbody");
+      oldtbody.remove();
+      const table = document.querySelector('table');
+      let newtbody = document.createElement('tbody');
+      table.appendChild(newtbody);
+      const newSection = document.querySelector('tbody');
+
+      let article = document.createElement('tr');
+      let name = document.createElement('td');
+      let released = document.createElement('td');
+      let text = document.createElement('td');
+      let id = document.createElement('td');
+      let song = document.createElement('td');
+      let audio = document.createElement('audio');
+
+      name.textContent = songData[0].name;
+      released.textContent = songData[0].released;
+      text.textContent = songData[0].text;
+      id.textContent = songData[0].id;
+      audio.controls = 'controls';
+      audio.src = songData[0].path;
+
+      article.appendChild(name);
+      article.appendChild(released);
+      article.appendChild(text);
+      article.appendChild(id);
+      song.appendChild(audio);
+      article.appendChild(song);
+
+      newSection.appendChild(article);
     }
   </script>
  </body>
