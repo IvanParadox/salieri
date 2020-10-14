@@ -1311,7 +1311,7 @@ function getSearch(req, res, requestedFile) {
     console.log(query);
     let [key, value] = query.split('=');
     if (value === '') {
-      res.end('You did not fill the form');
+      getSongs(req, res);
     }
     let result = search(value);
     res.end(JSON.stringify(result));

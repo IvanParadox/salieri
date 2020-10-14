@@ -122,36 +122,40 @@
     }
 
     function searchSong(songData) {
+
       let oldtbody = document.getElementById("tbody");
       oldtbody.remove();
       const table = document.querySelector('table');
       let newtbody = document.createElement('tbody');
+      newtbody.id = 'tbody';
       table.appendChild(newtbody);
       const newSection = document.querySelector('tbody');
 
-      let article = document.createElement('tr');
-      let name = document.createElement('td');
-      let released = document.createElement('td');
-      let text = document.createElement('td');
-      let id = document.createElement('td');
-      let song = document.createElement('td');
-      let audio = document.createElement('audio');
+      for (let i = 0; i < songData.length; i++) {
+        let article = document.createElement('tr');
+        let name = document.createElement('td');
+        let released = document.createElement('td');
+        let text = document.createElement('td');
+        let id = document.createElement('td');
+        let song = document.createElement('td');
+        let audio = document.createElement('audio');
 
-      name.textContent = songData[0].name;
-      released.textContent = songData[0].released;
-      text.textContent = songData[0].text;
-      id.textContent = songData[0].id;
-      audio.controls = 'controls';
-      audio.src = songData[0].path;
+        name.textContent = songData[i].name;
+        released.textContent = songData[i].released;
+        text.textContent = songData[i].text;
+        id.textContent = songData[i].id;
+        audio.controls = 'controls';
+        audio.src = songData[i].path;
 
-      article.appendChild(name);
-      article.appendChild(released);
-      article.appendChild(text);
-      article.appendChild(id);
-      song.appendChild(audio);
-      article.appendChild(song);
+        article.appendChild(name);
+        article.appendChild(released);
+        article.appendChild(text);
+        article.appendChild(id);
+        song.appendChild(audio);
+        article.appendChild(song);
 
-      newSection.appendChild(article);
+        newSection.appendChild(article);
+      }
     }
   </script>
  </body>
