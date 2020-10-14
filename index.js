@@ -1349,6 +1349,8 @@ server.listen(port, (err) => {
     }    console.log(`server is listening on ${port}`);
 });
 
+const express = require('express')
+const app = express()
 const cmd = require("node-cmd");
 
 app.post('/git', (req, res) => {
