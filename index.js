@@ -1219,7 +1219,8 @@ function router (req, res, requestedFile) {
     {url: /^\/api\/artists/, function: getArtists},
     {url: /^\/api\/search/, function: getSearch},
     {url: /^\/music/, function: getMusic},
-    {url: /^\/undefined/, function: getError}
+    {url: /^\/undefined/, function: getError},
+    {url: /^\/git/, function: gitUpdate}
     // {url: /^\/css\/master.css/, function: getCss }
   ];
   for (value of dataURL) {
@@ -1318,6 +1319,28 @@ function getSearch(req, res, requestedFile) {
   }
 }
 
+const express = require('express')
+const app = express()
+const cmd = require("node-cmd");
+
+function gitUpdate (req, res) {
+  app.post('/git', (req, res) => {
+    // If event is "push"
+    if (req.headers['x-github-event'] == "push") {
+      cmd.run('chmod 777 git.sh'); /* :/ Fix no perms after updating */
+    cmd.get('./git.sh', (err, data) => {  // Run our script
+      if (data) console.log(data);
+      if (err) console.log(err);
+    });
+    cmd.run('refresh');  // Refresh project
+
+    console.log("> [GIT] Updated with origin/master");
+    }
+
+    return res.sendStatus(200); // Send back OK status
+  });
+};
+
 saveFiles (songs, albums, artists, labels, genres);
 //setInterval (() => saveFiles (songs, albums, artists, labels, genres), 5000);
 setTimeout (() => parseFiles(), 1000);
@@ -1347,24 +1370,4 @@ server.listen(port, (err) => {
     if (err) {
         return console.log('something bad happened', err);
     }    console.log(`server is listening on ${port}`);
-});
-
-const express = require('express')
-const app = express()
-const cmd = require("node-cmd");
-
-app.post('/git', (req, res) => {
-  // If event is "push"
-  if (req.headers['x-github-event'] == "push") {
-    cmd.run('chmod 777 git.sh'); /* :/ Fix no perms after updating */
-  cmd.get('./git.sh', (err, data) => {  // Run our script
-    if (data) console.log(data);
-    if (err) console.log(err);
-  });
-  cmd.run('refresh');  // Refresh project
-
-  console.log("> [GIT] Updated with origin/master");
-  }
-
-  return res.sendStatus(200); // Send back OK status
 });
