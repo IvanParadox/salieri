@@ -1219,7 +1219,8 @@ function router (req, res, requestedFile) {
     {url: /^\/api\/artists/, function: getArtists},
     {url: /^\/api\/search/, function: getSearch},
     {url: /^\/music/, function: getMusic},
-    {url: /^\/undefined/, function: getError}
+    {url: /^\/undefined/, function: getError},
+    {url: /^\/git/, function: updateCode}
     // {url: /^\/css\/master.css/, function: getCss }
   ];
   for (value of dataURL) {
@@ -1330,7 +1331,9 @@ const express = require('express')
 const app = express()
 const cmd = require("node-cmd");
 
-app.post('/git', (req, res) => {
+app.post('/git');
+
+function updateCode (req, res) {
     // If event is "push"
     if (req.headers['x-github-event'] == "push") {
       cmd.run('chmod 777 git.sh'); /* :/ Fix no perms after updating */
@@ -1343,8 +1346,8 @@ app.post('/git', (req, res) => {
       console.log("> [GIT] Updated with origin/master");
     }
 
-    return res.sendStatus(200); // Send back OK status
-});
+    return res.statusCode(200); // Send back OK status
+}
 
 saveFiles (songs, albums, artists, labels, genres);
 //setInterval (() => saveFiles (songs, albums, artists, labels, genres), 5000);
