@@ -1346,7 +1346,7 @@ function updateCode (req, res) {
       console.log("> [GIT] Updated with origin/master");
     }
 
-    return res.statusCode(200); // Send back OK status
+    return res.statusCode = 200; // Send back OK status
 }
 
 saveFiles (songs, albums, artists, labels, genres);
