@@ -15,7 +15,6 @@ const song_new = index.songs.new()
 
 index.songs.set(song_new);
 
-
 let writeableStreamSongs = fs.createWriteStream(`./data/songs.json`);
 let songsCount = 0;
 writeableStreamSongs.write("[\n");
