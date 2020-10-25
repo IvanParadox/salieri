@@ -9,17 +9,11 @@ let mimeTypes = {
   "zip": "application/zip"
 }
 
-let Albums = require('./albums.js');
-let Artists = require('./artists.js');
-let Genres = require('./genres.js');
-let Labels = require('./labels.js');
-let Songs = require('./songs.js');
-
-const albums = new Albums();
-const songs = new Songs();
-const labels = new Labels();
-const artists = new Artists();
-const genres = new Genres();
+albums = require('./albums.js');
+artists = require('./artists.js');
+genres = require('./genres.js');
+labels = require('./labels.js');
+songs = require('./songs.js');
 
 function saveFiles(songs, albums, artists, labels, genres) {
   try {
