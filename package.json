@@ -24,6 +24,6 @@
     "node-cmd": "^3.0.0"
   },
   "devDependencies": {
-    "mocha": "^8.2.0"
+    "mocha": "^10.1.0"
   }
 }
